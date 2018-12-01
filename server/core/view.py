@@ -1,4 +1,4 @@
-__all__ = ["register","download","login,upload"]
+__all__ = ["register", "login"]
 
 import hashlib
 from conf import settings
@@ -11,7 +11,9 @@ def __secret(passwd_md5):
     secret_key = "jst-ftp"
     passwd_f = hashlib.md5()
     passwd_f.update((passwd_md5+secret_key).encode(settings.CODE))
-    return passwd_f.hexdigest()    
+    return passwd_f.hexdigest()
+
+
 def __get_userinfo(username):
     with open("../db/passwd","r") as f:
         for line in f.readlines():
@@ -19,6 +21,7 @@ def __get_userinfo(username):
                 print(line)
                 return line.split(":")
     return False
+
 
 def register(**kwarg):
     if __get_userinfo(kwarg["username"]):
@@ -35,6 +38,7 @@ def register(**kwarg):
     user_obj.dumpinfo()
     return (True,"用户注册成功",user_obj)
 
+
 def login(**kwarg):
     userinfo = __get_userinfo(kwarg["username"])
     if not userinfo:
@@ -44,11 +48,3 @@ def login(**kwarg):
         return (True,"登陆成功",user_obj)
     else:
         return (False,"密码错误")
-        
-
-def download():
-    pass
-
-def upload():
-    pass
-

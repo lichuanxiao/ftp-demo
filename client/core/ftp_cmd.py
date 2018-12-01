@@ -2,20 +2,23 @@ import os
 import struct
 import json
 
-cmd_list = [("上传","upload"),("下载","download"),("创建目录","mkdir"),
-            ("删除目录","deldir"),("上级目录","parentdir"),
-            ("切换目录","changedir"),("删除文件","delfile"),
-            ("退出","quit"),("查看当前目录","ls"),("用户信息","showme")]
+cmd_list = [("上传", "upload"), ("下载", "download"), ("创建目录", "mkdir"),
+            ("删除目录", "deldir"), ("上级目录", "parentdir"),
+            ("切换目录", "changedir"), ("删除文件", "delfile"),
+            ("退出", "quit"), ("查看当前目录", "ls"), ("用户信息", "showme")]
+
+
 class Cmd():
     def __init__(self,auth_obj_socket):
         self.socket = auth_obj_socket
-        self.ftp_cmd()
+        self.cmd_list = cmd_list
 
     def sendhead(self,head):
-        head_bytes = json.dumps(head).encode("uft-8")
-        head_len_bytes = struct.pack(i,len(head_bytes))
+        head_bytes = json.dumps(head).encode("utf-8")
+        head_len_bytes = struct.pack("i", len(head_bytes))
         self.socket.sk.send(head_len_bytes)
         self.socket.sk.send(head_bytes)
+
     def upload(self):
         upload_file_path = input("请输入你要上传的文件路径:").strip()
         if not os.path.isfile(upload_file_path):
@@ -31,17 +34,3 @@ class Cmd():
                     break
                 self.socket.sk.send(block)
                 #TODO:添加 md5 对比
-    def ftp_cmd(self):
-        for index,item in enumerate(cmd_list,1):
-            print(index,item[0])
-        while 1:
-            try:
-                cmd_num = int(input(">>>选择操作:").strip())
-                if hasattr(Cmd,cmd_list[cmd_num-1][1]):
-                    cmd_final = getattr(Cmd,cmd_list[cmd_num-1][1])
-                    cmd_final()
-                else:
-                    print("没有这个命令")
-            
-            except:
-                print("你输入的有误")

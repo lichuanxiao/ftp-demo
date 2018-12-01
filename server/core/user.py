@@ -37,7 +37,7 @@ class User():
     def used_space(self):
         pass
     def func_list(self):
-        return ["upload","download","mkdir","change_dir","show_me","ls",'"quit"]
+        return ["upload", "download", "mkdir", "change_dir", "show_me", "ls", "quit"]
     def dumpinfo(self):
         info = {"username":self.username,"diskspace":self.diskspace,"used_space":self.used_space}
         with open(self.db_path,'wb') as f:
@@ -49,3 +49,16 @@ class User():
         with open(db_path,'rb') as f:
             info = pickle.load(f)
             return User(**info)
+
+    def upload(self, mysocket, **kwargs):
+        download_file_name = kwargs["file_name"]
+        download_file_size = kwargs["file_size"]
+        with open(os.path.join(self.currentpath,download_file_name),'wb') as f:
+            while 1:
+                block = mysocket.recv(1024)
+                f.write(block)
+                download_file_size -= 1024
+                if not download_file_size:
+                    break
+        return {"status":True,"message":"上传成功"}
+
